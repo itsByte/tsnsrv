@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"golang.org/x/exp/slog"
 	"tailscale.com/client/tailscale/apitype"
 )
 
@@ -44,7 +44,7 @@ type proxyContext struct {
 }
 
 func (c *proxyContext) observeResponse(res *http.Response) {
-	elapsed := time.Now().Sub(c.start)
+	elapsed := time.Since(c.start)
 	requestDurations.Observe(float64(elapsed))
 
 	statusClass := fmt.Sprintf("%dxx", res.StatusCode/100)
@@ -209,7 +209,7 @@ func matchPrefixes(prefixes []string, strip bool, handler http.Handler) http.Han
 				return
 			}
 		}
-		slog.WarnCtx(r.Context(), "URL prefix not allowed",
+		slog.WarnContext(r.Context(), "URL prefix not allowed",
 			"url", r.URL,
 			"prefixes", prefixes,
 		)
