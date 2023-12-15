@@ -7,4 +7,4 @@ RUN go mod download
 COPY . .
 RUN go build -o ../
 RUN apk del git
-ENTRYPOINT ["/go/bin/tsnsrv"]
+ENTRYPOINT ["/app/tsnsrv"]
